@@ -100,6 +100,13 @@ The voxel filter node also provides visualization of the input and filtered poin
 
 2. The mls_upsampler_node can be customized using the following parameters in the launch file (`start_upsampler.launch`):
 
+- `input_pcd_file` (default: "data/map.pcd"): The path to the input PCD file.
+- `output_pcd_file` (default: "data/new_pcd.pcd"): The path to save the filtered PCD file.
+- `search_radius` (default: 0.3): radius between each point. If you want to search wider area, set this value higher. Note that higher values will take more time to calculate.
+- `` (default: "data/map.pcd"): The path to the input PCD file.
+- `m_step_size` (default: "data/map.pcd"): The path to the input PCD file.
+
+
 ## Subscribed Topics
 
 The voxel filter node subscribes to the following topic:
