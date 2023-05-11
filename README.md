@@ -1,8 +1,10 @@
 # Voxel Grid Filter and Moving Least Squares technique
 
 The Voxel Grid Filter is a ROS package that performs downsampling of point clouds using the Voxel Grid algorithm. This filter can be used to reduce the number of points in a point cloud (downsampling) based on a specified voxel size. 
+
 Moving Least Squares technique on the other hand is used for up sampling pcd files. This technique can be used to increase point numbers on output pcd file (upsampling) based on a specified parameters. 
-Please note that; Using mls as upsampling requires alot of processing power, so in order to avoid lagging or freezing on your system, set parameter values compatible according to your prject and system capacity. Getting output may take some time.
+
+Please note that; Using MLS as upsampling requires alot of processing power, so in order to avoid lagging or freezing on your system, set parameter values compatible according to your prject and system capacity. Getting output may take some time.
 
 ## Package Overview
 
@@ -59,6 +61,7 @@ rostopic echo /voxel_down_node/filtered_cloud
 ```
 2.For MLS:
 ```
+rostopic echo /mls_upsampler_node/upsampled_cloud 
 ```
 This will display the filtered point cloud data on the console.
 
@@ -69,7 +72,13 @@ The voxel filter node also provides visualization of the input and filtered poin
 1. How it should look like (VOXEL)
 ![voxel](https://github.com/ibrahimtosun18/Voxel_Grid_Filter/assets/95874081/a8f4df1b-1804-41a1-a6d5-837944c179ff)
 
+Another pcd file example:
+
+![down_sample1](https://github.com/ibrahimtosun18/voxel_pkg/assets/95874081/e8f6a8e4-a5ce-4458-a295-b1b4c672b9a7)
+
+
 2. How it should look like (MLS)
+![upsampled1](https://github.com/ibrahimtosun18/voxel_pkg/assets/95874081/11fcd2b6-9ecf-4e49-bdcf-0efe6425d03d)
 
 ## Launch File Parameters
 
