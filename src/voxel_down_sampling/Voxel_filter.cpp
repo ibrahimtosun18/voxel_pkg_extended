@@ -39,7 +39,13 @@ namespace voxel_grid
     {
         // Load the input PCD file
         pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
-        pcl::io::loadPCDFile(m_input_pcd_file, *cloud);
+
+        // check if the input file is empty
+        if (pcl::io::loadPCDFile(m_input_pcd_file, *cloud) < 0)
+        {
+            PCL_ERROR("Failed to load file %s\n", m_input_pcd_file.c_str());
+            return;
+        }
 
         // Apply the voxel grid filter
         pcl::PointCloud<pcl::PointXYZ>::Ptr filtered_cloud(new pcl::PointCloud<pcl::PointXYZ>);

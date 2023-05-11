@@ -11,13 +11,20 @@
 
 namespace mls_upsampling
 {
-    class MSLUpsampler
+    class MLSUpsampler
     {
     public:
-        MSLUpsampler(ros::NodeHandle &nh);
+        // Constructor
+        MLSUpsampler(ros::NodeHandle &nh);
+
+        // Destructor
+        ~MLSUpsampler();
+        
+        // This function is used to process the point cloud. It upsamples it and visualize it then publish it
         void processPointCloud();
 
     private:
+        
         ros::NodeHandle nh_;
 
         ros::Publisher point_publisher;
@@ -26,5 +33,9 @@ namespace mls_upsampling
         std::string m_output_pcd_file;
         
         double m_search_radius;
+        // double m_upsampling_radius;
+        // double m_step_size;
+
+
     };
 }
