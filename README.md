@@ -23,7 +23,7 @@ The Moving Least Squares technique in this package consists of the following fil
 
 ## Installation
 
-To use the Voxel Grid Filter package, follow these steps:
+To use this downsampling and upsampling package, follow these steps:
 
 1. Clone the repository into your own workspace:
 ```
@@ -37,6 +37,9 @@ cd ~/your_worksapce
 catkin_make
 ```
 ## Usage
+
+You can either use downsampling or upsampling saperately or both of them at the same time. Use it according to your requirements.
+
 1. Launch the voxel filter node:
 ```
 roslaunch voxel_pkg start_voxel_grid_filter.launch
@@ -50,6 +53,7 @@ roslaunch voxel_pkg start_upsampler.launch
 
 
 ## Monitor the output:
+
 1. Voxel Filter:
 
 ![terminal2](https://github.com/ibrahimtosun18/Voxel_Grid_Filter/assets/95874081/fae2ffcc-bb85-4158-ab02-f4f2eea5e193)
@@ -103,8 +107,8 @@ The voxel filter node also provides visualization of the input and filtered poin
 - `input_pcd_file` (default: "data/map.pcd"): The path to the input PCD file.
 - `output_pcd_file` (default: "data/new_pcd.pcd"): The path to save the filtered PCD file.
 - `search_radius` (default: 0.3): radius between each point. If you want to search wider area, set this value higher. Note that higher values will take more time to calculate.
-- `` (default: "data/map.pcd"): The path to the input PCD file.
-- `m_step_size` (default: "data/map.pcd"): The path to the input PCD file.
+- `m_upsampling_radius` (default: 0.025): parameter for upsampling input pcd file.
+- `m_step_size` (default: 0.01): parameter for upsampling input pcd file.
 
 
 ## Subscribed Topics
