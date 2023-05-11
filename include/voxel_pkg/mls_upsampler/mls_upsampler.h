@@ -33,8 +33,8 @@ namespace mls_upsampling
         std::string m_output_pcd_file;
         
         double m_search_radius;
-        // double m_upsampling_radius;
-        // double m_step_size;
+        double m_upsampling_radius;
+        double m_step_size;
 
 
     };
