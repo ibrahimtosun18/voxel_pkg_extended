@@ -1,6 +1,6 @@
 <launch>
   <node name="voxel_filter_node" pkg="voxel_pkg" type="voxel_filter_node" output="screen">
-    <param name="input_pcd_file" value="$(find voxel_pkg)/data/30_ekim_tum_parkur.pcd" />
+    <param name="input_pcd_file" value="$(find voxel_pkg)/data/251371071.pcd" />
     <param name="output_pcd_file" value="$(find voxel_pkg)/data/new_pcd.pcd" />
 
     <!-- Arrange the voxel size according to your needs from this line -->
