@@ -59,7 +59,7 @@ roslaunch voxel_pkg start_upsampler.launch
 ![terminal2](https://github.com/ibrahimtosun18/Voxel_Grid_Filter/assets/95874081/fae2ffcc-bb85-4158-ab02-f4f2eea5e193)
 
 
-2. MLS tqchnique:
+2. MLS technique:
 
 ![terminal_mls](https://github.com/ibrahimtosun18/voxel_pkg/assets/95874081/9911890a-bcfb-4a8b-8272-c83447b41092)
 
