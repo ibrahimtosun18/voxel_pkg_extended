@@ -28,7 +28,7 @@ To use the Voxel Grid Filter package, follow these steps:
 1. Clone the repository into your own workspace:
 ```
 cd ~/your_workspace/src
-git clone <git@github.com:ibrahimtosun18/Voxel_Grid_Filter.git>
+git clone git@github.com:ibrahimtosun18/voxel_pkg.git
 ```
 
 2. Build the package:
@@ -51,7 +51,14 @@ roslaunch voxel_pkg start_upsampler.launch
 
 ## Monitor the output:
 1. Voxel Filter:
+
 ![terminal2](https://github.com/ibrahimtosun18/Voxel_Grid_Filter/assets/95874081/fae2ffcc-bb85-4158-ab02-f4f2eea5e193)
+
+
+2. MLS tqchnique:
+
+![terminal_mls](https://github.com/ibrahimtosun18/voxel_pkg/assets/95874081/9911890a-bcfb-4a8b-8272-c83447b41092)
+
 
 You can use the `rostopic echo` command to monitor the filtered point cloud output for both Voxel Filter and MLS:
 
@@ -70,14 +77,17 @@ This will display the filtered point cloud data on the console.
 The voxel filter node also provides visualization of the input and filtered point clouds using the PCLVisualizer. The visualizer windows will appear when the node is running.
 
 1. How it should look like (VOXEL)
+
 ![voxel](https://github.com/ibrahimtosun18/Voxel_Grid_Filter/assets/95874081/a8f4df1b-1804-41a1-a6d5-837944c179ff)
 
-Another pcd file example:
+2.Another pcd file example:
 
 ![down_sample1](https://github.com/ibrahimtosun18/voxel_pkg/assets/95874081/e8f6a8e4-a5ce-4458-a295-b1b4c672b9a7)
 
 
+
 2. How it should look like (MLS)
+
 ![upsampled1](https://github.com/ibrahimtosun18/voxel_pkg/assets/95874081/11fcd2b6-9ecf-4e49-bdcf-0efe6425d03d)
 
 ## Launch File Parameters
