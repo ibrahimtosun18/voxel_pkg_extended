@@ -9,6 +9,10 @@ namespace mls_upsampling
         nh_.param<std::string>("input_pcd_file", m_input_pcd_file, "");
         nh_.param<std::string>("output_pcd_file", m_output_pcd_file, "");
 
+        nh_.param("upsampling_radius", m_upsampling_radius, 0.025); // default value is 0.025
+        nh_.param("step_size", m_step_size, 0.01); // default value is 0.01
+
+
         //sets the default leaf size of the voxel grid filter but can be changed in the launch file
         nh_.param("search_radius", m_search_radius, 0.1);
 
@@ -62,8 +66,9 @@ namespace mls_upsampling
 
         // Upsampling the point cloud
         mls.setUpsamplingMethod(pcl::MovingLeastSquares<pcl::PointXYZ, pcl::PointXYZ>::SAMPLE_LOCAL_PLANE);
-        mls.setUpsamplingRadius(0.025);
-        mls.setUpsamplingStepSize(0.01);
+        mls.setUpsamplingRadius(m_upsampling_radius);
+        mls.setUpsamplingStepSize(m_step_size);
+
     
         // Reconstruct
         mls.process(*upsampled_cloud);
