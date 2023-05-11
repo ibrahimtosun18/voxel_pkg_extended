@@ -1,0 +1,11 @@
+<launch>
+  <node name="voxel_filter_node" pkg="voxel_pkg" type="voxel_filter_node" output="screen">
+    <param name="input_pcd_file" value="$(find voxel_pkg)/data/map.pcd" />
+    <param name="output_pcd_file" value="$(find voxel_pkg)/data/new_pcd.pcd" />
+
+    <!-- Arrange the voxel size according to your needs from this line -->
+    <param name="leaf_size" value="0.5" />
+    <param name="/use_sim_time" value="true" />
+
+  </node>
+</launch>
