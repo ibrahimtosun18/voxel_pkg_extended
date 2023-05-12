@@ -16,15 +16,23 @@ namespace voxel_grid
 
     public:
 
+        //constructor
         VoxelFilterDown(ros::NodeHandle &nh);
+
+        //destructor
+        ~VoxelFilterDown();
+
+        // This function is used to process the point cloud. 
         void processPointCloud();
 
     private:
 
-        ros::NodeHandle nh_;
+        //Read parameters function
+        bool readParameters();
+        
+        ros::Publisher point_cloud_publisher;
 
-        ros::Subscriber point_subscriber;
-        ros::Publisher point_publisher;
+        ros::NodeHandle nh_;
 
         std::string m_input_pcd_file;
         std::string m_output_pcd_file;

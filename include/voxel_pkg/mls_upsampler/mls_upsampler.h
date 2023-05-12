@@ -20,14 +20,17 @@ namespace mls_upsampling
         // Destructor
         ~MLSUpsampler();
         
-        // This function is used to process the point cloud. It upsamples it and visualize it then publish it
+        // This function is used to process the point cloud. 
         void processPointCloud();
 
     private:
         
+        //Read parameters function
+        bool readParameters();
+
         ros::NodeHandle nh_;
 
-        ros::Publisher point_publisher;
+        ros::Publisher point_cloud_publisher;
 
         std::string m_input_pcd_file;
         std::string m_output_pcd_file;

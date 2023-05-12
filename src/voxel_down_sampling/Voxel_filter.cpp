@@ -4,16 +4,15 @@ namespace voxel_grid
 {
     VoxelFilterDown::VoxelFilterDown(ros::NodeHandle &nh) : nh_(nh)
     {
-        // Get the parameters from the launch file
-        //These lines only used for default values in case of not using the launch file
-        nh_.param<std::string>("input_pcd_file", m_input_pcd_file, "data/map.pcd");
-        nh_.param<std::string>("output_pcd_file", m_output_pcd_file, "data/new_pcd.pcd");
 
-        //sets the default leaf size of the voxel grid filter but can be changed in the launch file
-        nh_.param("leaf_size", m_leaf_size, 0.1);
+        point_cloud_publisher = nh_.advertise<sensor_msgs::PointCloud2>("voxel_downsampled_point_cloud", 1, true);
 
-        // I also added a publisher in case of using the voxel filter as a subscriber from other nodes
-        point_publisher = nh_.advertise<sensor_msgs::PointCloud2>("filtered_cloud", 1);
+        // This loop is used to check if the parameters are loaded from the launch file or not. If not, the node will be shut down.
+        if (!readParameters())
+        {
+          ROS_ERROR("Could not launch the node!.");
+          ros::requestShutdown();
+        }
 
         processPointCloud(); // Call the processPointCloud() function
         
@@ -32,9 +31,38 @@ namespace voxel_grid
         std::cout << "  ************************************************************************" << std::endl;
     }
 
+    // Destructor
+    VoxelFilterDown::~VoxelFilterDown()
+    {
+    }
 
-    // This function loads the input PCD file, applies the voxel grid filter, and saves the filtered PCD file then visualizes the input 
-    // and filtered point clouds then publishes the filtered point cloud
+    //This function reads the parameters from the launch file
+    bool VoxelFilterDown::readParameters()
+    {
+      bool success = true;
+
+    if (!nh_.getParam("input_pcd_file", m_input_pcd_file))
+    {
+        ROS_ERROR_STREAM("Failed to load input pcd file.");
+        return false;
+    }
+
+    if (!nh_.getParam("output_pcd_file", m_output_pcd_file))
+    {
+        ROS_ERROR_STREAM("Failed to load output pcd file.");
+        return false;
+    }
+
+    if (!nh_.getParam("m_leaf_size", m_leaf_size))
+    {
+        ROS_ERROR_STREAM("Failed to get leaf size.");
+        return false;
+    }
+
+        return success;
+    }
+
+    // This function loads the input PCD file, applies the voxel grid filter, and saves the filtered PCD file as binary
 
     void VoxelFilterDown::processPointCloud()
     {
@@ -61,6 +89,7 @@ namespace voxel_grid
         // Save the filtered PCD file as binary
         pcl::io::savePCDFileBinary(m_output_pcd_file, *filtered_cloud);
 
+        
         // Visualize the input and filtered point clouds
         pcl::visualization::PCLVisualizer::Ptr input_viewer(new pcl::visualization::PCLVisualizer("Input Cloud Viewer"));
         pcl::visualization::PCLVisualizer::Ptr filtered_viewer(new pcl::visualization::PCLVisualizer("Filtered Cloud Viewer"));
@@ -102,10 +131,9 @@ namespace voxel_grid
 
             // Publish the filtered point cloud
             ros::Time time = ros::Time::now();
-            point_publisher.publish(output);
+            point_cloud_publisher.publish(output);
             ros::spinOnce();
         }
-        
     } // processPointCloud
 
 } // namespace voxel_grid
