@@ -6,7 +6,6 @@ int main(int argc, char **argv)
     ros::NodeHandle nh("~");
 
     mls_upsampling::MLSUpsampler mu(nh);
-    mu.processPointCloud(); // Call the processPointCloud() function
-
+    
     return 0;
 }

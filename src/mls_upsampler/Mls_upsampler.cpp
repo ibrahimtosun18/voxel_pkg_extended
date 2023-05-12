@@ -19,6 +19,8 @@ namespace mls_upsampling
         // I also added a publisher in case of using the voxel filter as a subscriber from other nodes
         point_publisher = nh_.advertise<sensor_msgs::PointCloud2>("upsampled_cloud", 1);
 
+        processPointCloud(); // Call the processPointCloud() function
+
         //Giving information about the node
         std::cout << "  =============================================================== " << std::endl;
         std::cout << "  MLS UPSAMPLER NODE IS STARTED FOR UP SAMPLING THE POINT CLOUD" << std::endl;
@@ -33,6 +35,7 @@ namespace mls_upsampling
         std::cout << "  SEARCH RADIUS: " << m_search_radius << std::endl;
         std::cout << "  ************************************************************************" << std::endl;
     }
+    
     // Destructor
     MLSUpsampler::~MLSUpsampler()
     {
@@ -73,50 +76,50 @@ namespace mls_upsampling
         // Reconstruct
         mls.process(*upsampled_cloud);
 
-        // Save the output point cloud
-        pcl::io::savePCDFileASCII(m_output_pcd_file, *upsampled_cloud);
+        // Save the output point cloud as binary
+        pcl::io::savePCDFileBinary(m_output_pcd_file, *upsampled_cloud);
 
-        // Create the viewers
-        pcl::visualization::PCLVisualizer::Ptr input_viewer(new pcl::visualization::PCLVisualizer("Input Cloud Viewer"));
-        pcl::visualization::PCLVisualizer::Ptr upsampled_viewer(new pcl::visualization::PCLVisualizer("Upsampled Cloud Viewer"));
+        // // Create the viewers
+        // pcl::visualization::PCLVisualizer::Ptr input_viewer(new pcl::visualization::PCLVisualizer("Input Cloud Viewer"));
+        // pcl::visualization::PCLVisualizer::Ptr upsampled_viewer(new pcl::visualization::PCLVisualizer("Upsampled Cloud Viewer"));
 
-        // Convert the pcl::PointCloud type to sensor_msgs::PointCloud2 type
-        sensor_msgs::PointCloud2 output;
-        pcl::toROSMsg(*upsampled_cloud, output);
-        output.header.frame_id = "upsampled_cloud";
+        // // Convert the pcl::PointCloud type to sensor_msgs::PointCloud2 type
+        // sensor_msgs::PointCloud2 output;
+        // pcl::toROSMsg(*upsampled_cloud, output);
+        // output.header.frame_id = "upsampled_cloud";
 
-        // Set the background color
-        input_viewer->setBackgroundColor(0, 0, 0);
-        upsampled_viewer->setBackgroundColor(0, 0, 0);
+        // // Set the background color
+        // input_viewer->setBackgroundColor(0, 0, 0);
+        // upsampled_viewer->setBackgroundColor(0, 0, 0);
 
-        // Add the point clouds to the viewers
-        input_viewer->addPointCloud<pcl::PointXYZ>(cloud, "input cloud");
-        upsampled_viewer->addPointCloud<pcl::PointXYZ>(upsampled_cloud, "upsampled cloud");
+        // // Add the point clouds to the viewers
+        // input_viewer->addPointCloud<pcl::PointXYZ>(cloud, "input cloud");
+        // upsampled_viewer->addPointCloud<pcl::PointXYZ>(upsampled_cloud, "upsampled cloud");
 
-        // Set the size of points
-        input_viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "input cloud");
-        upsampled_viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "upsampled cloud");
+        // // Set the size of points
+        // input_viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "input cloud");
+        // upsampled_viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "upsampled cloud");
 
-        // Set the color of points
-        input_viewer->addCoordinateSystem(10.0);
-        upsampled_viewer->addCoordinateSystem(10.0);
+        // // Set the color of points
+        // input_viewer->addCoordinateSystem(10.0);
+        // upsampled_viewer->addCoordinateSystem(10.0);
 
-        // Set camera position and orientation
-        input_viewer->initCameraParameters();
-        upsampled_viewer->initCameraParameters();
+        // // Set camera position and orientation
+        // input_viewer->initCameraParameters();
+        // upsampled_viewer->initCameraParameters();
 
-        while (ros::ok())
-        {
-            // Update the viewers
-            input_viewer->spinOnce(100);
-            upsampled_viewer->spinOnce(100);
-            std::this_thread::sleep_for(std::chrono::microseconds(100000));
+        // while (ros::ok())
+        // {
+        //     // Update the viewers
+        //     input_viewer->spinOnce(100);
+        //     upsampled_viewer->spinOnce(100);
+        //     std::this_thread::sleep_for(std::chrono::microseconds(100000));
 
-            // Publish the upsampled point cloud
-            ros::Time time = ros::Time::now();
-            point_publisher.publish(output);
-            ros::spinOnce();
-        }
+        //     // Publish the upsampled point cloud
+        //     ros::Time time = ros::Time::now();
+        //     point_publisher.publish(output);
+        //     ros::spinOnce();
+        // }
 
     } // processPointCloud
 
