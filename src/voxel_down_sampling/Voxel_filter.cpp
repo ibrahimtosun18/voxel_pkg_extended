@@ -15,7 +15,8 @@ namespace voxel_grid
         // I also added a publisher in case of using the voxel filter as a subscriber from other nodes
         point_publisher = nh_.advertise<sensor_msgs::PointCloud2>("filtered_cloud", 1);
 
-
+        processPointCloud(); // Call the processPointCloud() function
+        
         //Giving information about the node
         std::cout << "  =============================================================== " << std::endl;
         std::cout << "  VOXEL FILTER NODE IS STARTED FOR DOWN SAMPLING THE POINT CLOUD" << std::endl;
@@ -57,8 +58,8 @@ namespace voxel_grid
 
         vg.filter(*filtered_cloud);
 
-        // Save the filtered PCD file
-        pcl::io::savePCDFileASCII(m_output_pcd_file, *filtered_cloud);
+        // Save the filtered PCD file as binary
+        pcl::io::savePCDFileBinary(m_output_pcd_file, *filtered_cloud);
 
         // Visualize the input and filtered point clouds
         pcl::visualization::PCLVisualizer::Ptr input_viewer(new pcl::visualization::PCLVisualizer("Input Cloud Viewer"));

@@ -6,7 +6,6 @@ int main(int argc, char **argv)
     ros::NodeHandle nh("~");
 
     voxel_grid::VoxelFilterDown vf(nh);
-    vf.processPointCloud(); // Call the processPointCloud() function
 
     return 0;
 }
