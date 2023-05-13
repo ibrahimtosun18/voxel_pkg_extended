@@ -21,7 +21,8 @@ namespace mls_upsampling
         ~MLSUpsampler();
         
         // This function is used to process the point cloud. 
-        void processPointCloud();
+        void processPointCloud(const pcl::PointCloud<pcl::PointXYZ>::Ptr& cloud, pcl::PointCloud<pcl::PointXYZ>::Ptr& upsampled_cloud);
+        void visualizePointCloud(const pcl::PointCloud<pcl::PointXYZ>::Ptr& cloud, pcl::PointCloud<pcl::PointXYZ>::Ptr& upsampled_cloud);
 
     private:
         
@@ -38,6 +39,13 @@ namespace mls_upsampling
         double m_search_radius;
         double m_upsampling_radius;
         double m_step_size;
+        double background_color_r;
+        double background_color_g;
+        double background_color_b;
+
+        std::string m_input_cloud_viewer;
+        std::string m_upsampled_cloud_viewer;
+        
 
 
     };
