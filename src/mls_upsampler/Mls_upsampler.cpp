@@ -15,7 +15,11 @@ namespace mls_upsampling
           ros::requestShutdown();
         }
 
-        processPointCloud(); // Call the processPointCloud() function
+        pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
+        pcl::PointCloud<pcl::PointXYZ>::Ptr upsampled_cloud(new pcl::PointCloud<pcl::PointXYZ>);
+
+        processPointCloud(cloud, upsampled_cloud); // Call the processPointCloud() function
+        visualizePointCloud(cloud, upsampled_cloud); // Call the visualizePointCloud() function
 
         //Giving information about the node
         std::cout << "  =============================================================== " << std::endl;
@@ -37,7 +41,7 @@ namespace mls_upsampling
     {
     }
 
-    //This function reads the parameters from the launch file
+    //This function reads and check the parameters from the launch file
     bool MLSUpsampler::readParameters()
     {
       bool success = true;
@@ -65,21 +69,35 @@ namespace mls_upsampling
         ROS_ERROR_STREAM("Failed to load upsampling radius.");
         return false;
     }
+
     if (!nh_.getParam("m_step_size", m_step_size))
     {
         ROS_ERROR_STREAM("Failed to load step size.");
         return false;
     }
 
+    if (!nh_.getParam("input_cloud_viewer", m_input_cloud_viewer))
+    {
+        ROS_ERROR_STREAM("Failed to load input cloud viewer name.");
+        return false;
+    }
+
+    if (!nh_.getParam("upsampled_cloud_viewer", m_upsampled_cloud_viewer))
+    {
+        ROS_ERROR_STREAM("Failed to load upsampled cloud viewer name.");
+        return false;
+    }
+
+
         return success;
     }
 
 
     // This function is used to process the point cloud. 
-    void MLSUpsampler::processPointCloud()
+    // add necessary parameters into this function
+
+    void MLSUpsampler::processPointCloud(const pcl::PointCloud<pcl::PointXYZ>::Ptr& cloud, pcl::PointCloud<pcl::PointXYZ>::Ptr& upsampled_cloud)
     {
-        // Load the point cloud from the input file
-        pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
 
         // check if the input file is empty
         if (pcl::io::loadPCDFile(m_input_pcd_file, *cloud) < 0)
@@ -89,7 +107,7 @@ namespace mls_upsampling
         }
 
         // Create the output point cloud
-        pcl::PointCloud<pcl::PointXYZ>::Ptr upsampled_cloud(new pcl::PointCloud<pcl::PointXYZ>);
+        // pcl::PointCloud<pcl::PointXYZ>::Ptr upsampled_cloud(new pcl::PointCloud<pcl::PointXYZ>);
         // Create the search tree
         pcl::search::KdTree<pcl::PointXYZ>::Ptr tree(new pcl::search::KdTree<pcl::PointXYZ>);
 
@@ -112,10 +130,13 @@ namespace mls_upsampling
 
         // Save the output point cloud as binary
         pcl::io::savePCDFileBinary(m_output_pcd_file, *upsampled_cloud);
+    }
+    void MLSUpsampler::visualizePointCloud(const pcl::PointCloud<pcl::PointXYZ>::Ptr& cloud, pcl::PointCloud<pcl::PointXYZ>::Ptr& upsampled_cloud)
+    {
 
         // Create the viewers
-        pcl::visualization::PCLVisualizer::Ptr input_viewer(new pcl::visualization::PCLVisualizer("Input Cloud Viewer"));
-        pcl::visualization::PCLVisualizer::Ptr upsampled_viewer(new pcl::visualization::PCLVisualizer("Upsampled Cloud Viewer"));
+        pcl::visualization::PCLVisualizer::Ptr input_viewer(new pcl::visualization::PCLVisualizer("m_input_cloud_viewer"));
+        pcl::visualization::PCLVisualizer::Ptr upsampled_viewer(new pcl::visualization::PCLVisualizer("m_upsampled_cloud_viewer"));
 
         // Convert the pcl::PointCloud type to sensor_msgs::PointCloud2 type
         sensor_msgs::PointCloud2 output;
@@ -123,8 +144,12 @@ namespace mls_upsampling
         output.header.frame_id = "upsampled_cloud";
 
         // Set the background color
-        input_viewer->setBackgroundColor(0, 0, 0);
+        input_viewer->setBackgroundColor(background_color_r, background_color_g, background_color_b);
         upsampled_viewer->setBackgroundColor(0, 0, 0);
+    
+        // Set the color of points
+        input_viewer->addCoordinateSystem(10.0);
+        upsampled_viewer->addCoordinateSystem(10.0);
 
         // Add the point clouds to the viewers
         input_viewer->addPointCloud<pcl::PointXYZ>(cloud, "input cloud");
@@ -133,10 +158,6 @@ namespace mls_upsampling
         // Set the size of points
         input_viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "input cloud");
         upsampled_viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "upsampled cloud");
-
-        // Set the color of points
-        input_viewer->addCoordinateSystem(10.0);
-        upsampled_viewer->addCoordinateSystem(10.0);
 
         // Set camera position and orientation
         input_viewer->initCameraParameters();
