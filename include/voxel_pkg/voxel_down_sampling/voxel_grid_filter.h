@@ -5,7 +5,6 @@
 #include <pcl_conversions/pcl_conversions.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/filters/voxel_grid.h>
-#include <pcl/visualization/pcl_visualizer.h>
 #include <chrono>
 #include <thread>
 
@@ -23,7 +22,10 @@ namespace voxel_grid
         ~VoxelFilterDown();
 
         // This function is used to process the point cloud. 
-        void processPointCloud();
+        void processPointCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr& cloud, pcl::PointCloud<pcl::PointXYZ>::Ptr& filtered_cloud);
+
+        // This function is used to visualize the point cloud.
+        void visualizePointCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr& cloud, pcl::PointCloud<pcl::PointXYZ>::Ptr& filtered_cloud);
 
     private:
 
@@ -36,8 +38,16 @@ namespace voxel_grid
 
         std::string m_input_pcd_file;
         std::string m_output_pcd_file;
-        
+        std::string m_publisher_topic_name;
+
         double m_leaf_size;
+        double m_background_color_r;
+        double m_background_color_g;
+        double m_background_color_b;
+        double m_coordinate_system_size;
+        double m_point_size;
+        
+
     };
 
 }

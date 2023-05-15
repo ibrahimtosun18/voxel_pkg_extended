@@ -87,6 +87,24 @@ namespace mls_upsampling
         ROS_ERROR_STREAM("Failed to load upsampled cloud viewer name.");
         return false;
     }
+    
+    if (!nh_.getParam("background_color_r", m_background_color_r))
+    {
+        ROS_ERROR_STREAM("Failed to load background color r.");
+        return false;
+    }
+
+    if (!nh_.getParam("background_color_g", m_background_color_g))
+    {
+        ROS_ERROR_STREAM("Failed to load background color g.");
+        return false;
+    }
+
+    if (!nh_.getParam("background_color_b", m_background_color_b))
+    {
+        ROS_ERROR_STREAM("Failed to load background color b.");
+        return false;
+    }
 
 
         return success;
@@ -143,14 +161,6 @@ namespace mls_upsampling
         pcl::toROSMsg(*upsampled_cloud, output);
         output.header.frame_id = "upsampled_cloud";
 
-        // Set the background color
-        input_viewer->setBackgroundColor(background_color_r, background_color_g, background_color_b);
-        upsampled_viewer->setBackgroundColor(0, 0, 0);
-    
-        // Set the color of points
-        input_viewer->addCoordinateSystem(10.0);
-        upsampled_viewer->addCoordinateSystem(10.0);
-
         // Add the point clouds to the viewers
         input_viewer->addPointCloud<pcl::PointXYZ>(cloud, "input cloud");
         upsampled_viewer->addPointCloud<pcl::PointXYZ>(upsampled_cloud, "upsampled cloud");
@@ -165,6 +175,9 @@ namespace mls_upsampling
 
         while (ros::ok())
         {
+            // Set the background color
+            input_viewer->setBackgroundColor(m_background_color_r, m_background_color_g, m_background_color_b);
+            upsampled_viewer->setBackgroundColor(m_background_color_r, m_background_color_g, m_background_color_b);            
             // Update the viewers
             input_viewer->spinOnce(100);
             upsampled_viewer->spinOnce(100);

@@ -1,3 +1,6 @@
+#ifndef MLS_UPSAMPLER_H
+#define MLS_UPSAMPLER_H
+
 #include <ros/ros.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
@@ -39,9 +42,10 @@ namespace mls_upsampling
         double m_search_radius;
         double m_upsampling_radius;
         double m_step_size;
-        double background_color_r;
-        double background_color_g;
-        double background_color_b;
+        double m_background_color_r;
+        double m_background_color_g;
+        double m_background_color_b;
+        double m_coordinate_system_size;
 
         std::string m_input_cloud_viewer;
         std::string m_upsampled_cloud_viewer;
@@ -50,3 +54,4 @@ namespace mls_upsampling
 
     };
 }
+#endif // MLS_UPSAMPLER_H
