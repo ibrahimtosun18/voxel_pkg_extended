@@ -120,6 +120,48 @@ The voxel filter node publishes the following topic:
 The MLS node publishes the following topic:
 - `/upsampled_cloud`: The filtered point cloud topic. This topic contains the filtered point cloud data after applying the MLS technique.
 
+## Upsampler parameters:
+`input_pcd_file`: The path to the input PCD file to be upsampled.
+
+`output_pcd_file`: The path where the upsampled PCD file should be saved.
+
+`use_sim_time`: Set to true if you want the node to use simulation time (from a ROS bag file or simulator) instead of real time.
+
+`m_upsampling_radius`: The radius of the sphere that will be used for the upsampling. Points will be added within this sphere to create the upsampled point cloud.
+
+`m_step_size`: The step size for the movement of the sphere in the upsampling process.
+
+`m_search_radius`: The radius of the sphere within which to search for the nearest neighbors of a point.
+
+`input_cloud_topic`: The ROS topic on which the input point cloud is published.
+
+`upsampled_cloud_topic`: The ROS topic on which the upsampled point cloud will be published.
+
+`input_cloud_viewer`: The title of the viewer window for the input point cloud.
+
+`upsampled_cloud_viewer`: The title of the viewer window for the upsampled point cloud.
+
+`point_size`: The size of the points in the visualization.
+
+`coordinate_system_size`: The size of the coordinate system in the visualization.
+
+`background_color_r`, `background_color_g`, `background_color_b`: The RGB values (0-255) for the background color of the visualization.
+
+## Downsampler parameters:
+
+`input_pcd_file`: The path to the input PCD file to be downsampled.
+
+`output_pcd_file`: The path where the downsampled PCD file should be saved.
+
+`m_leaf_size`: The voxel grid leaf size. This is the size of the side of the voxels (3D pixels) used in the downsampling process. A smaller leaf size will result in a denser downsampled point cloud, but `will take longer to compute.
+
+`publish_topic`: The ROS topic on which the downsampled point cloud will be published.
+
+`point_size`: The size of the points in the visualization.
+
+`coordinate_system_size`: The size of the coordinate system in the visualization.
+
+`background_color_r`, `background_color_g`, `background_color_b`: The RGB values (0-255) for the background color of the visualization.
 
 ## Contact
 
