@@ -1,0 +1,2 @@
+voxel_pkg
+-DCATKIN_DEVEL_PREFIX=/home/ibrahim/voxel_ws/devel -DCMAKE_INSTALL_PREFIX=/home/ibrahim/voxel_ws/install -G Unix Makefiles

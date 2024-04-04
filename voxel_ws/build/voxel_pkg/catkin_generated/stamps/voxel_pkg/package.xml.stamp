@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>voxel_pkg</name>
+  <version>0.0.1</version>
+  <description>The voxel_pkg package</description>
+  <maintainer email="ibrahim.tsn18@gmail.com.com">ibrahim</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <depend>pcl_conversions</depend>
+  <depend>pcl_ros</depend>
+  <depend>roscpp</depend>
+  <depend>PCL</depend>
+</package>
