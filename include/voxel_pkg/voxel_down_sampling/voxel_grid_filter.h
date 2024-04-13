@@ -7,6 +7,8 @@
 #include <pcl/filters/voxel_grid.h>
 #include <chrono>
 #include <thread>
+#include <pcl/filters/statistical_outlier_removal.h>
+
 
 namespace voxel_grid
 {
@@ -22,17 +24,21 @@ namespace voxel_grid
         ~VoxelFilterDown();
 
         // This function is used to process the point cloud. 
-        void processPointCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr& cloud, pcl::PointCloud<pcl::PointXYZ>::Ptr& filtered_cloud);
+        void processPointCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr& cloud, 
+                                                pcl::PointCloud<pcl::PointXYZ>::Ptr& sor_filtered_cloud, 
+                                                pcl::PointCloud<pcl::PointXYZ>::Ptr& voxel_filtered_cloud); 
 
         // This function is used to visualize the point cloud.
-        void visualizePointCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr& cloud, pcl::PointCloud<pcl::PointXYZ>::Ptr& filtered_cloud);
+        void visualizePointCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr& cloud, 
+                                               pcl::PointCloud<pcl::PointXYZ>::Ptr& sor_filtered_cloud,
+                                               pcl::PointCloud<pcl::PointXYZ>::Ptr& voxel_filtered_cloud); 
 
     private:
 
         //Read parameters function
         bool readParameters();
         
-        ros::Publisher point_cloud_publisher;
+        ros::Publisher point_cloud_publisher_;
 
         ros::NodeHandle nh_;
 
@@ -46,6 +52,20 @@ namespace voxel_grid
         double m_background_color_b;
         double m_coordinate_system_size;
         double m_point_size;
+        double processing_time_ms_;
+
+        // SOR Filter parameters
+        bool use_sor_filter_;
+        int sor_mean_k_;
+        double sor_std_dev_mul_thresh_;
+        
+        void applySORFilter(pcl::PointCloud<pcl::PointXYZ>::Ptr& cloud);
+
+
+
+        // bool use_sor_filter_; // Whether to use the Statistical Outlier Removal filter
+        // int sor_mean_k_; // Number of nearest neighbors to use for mean distance estimation
+        // double sor_std_dev_mul_thresh_; // Standard deviation multiplier for determining which points to remove
         
 
     };

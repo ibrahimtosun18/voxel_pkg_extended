@@ -1,142 +1,140 @@
 #include "voxel_pkg/voxel_down_sampling/voxel_grid_filter.h"
+#include <pcl/io/pcd_io.h>
+#include <pcl/filters/voxel_grid.h>
+#include <pcl/filters/random_sample.h>
+#include <sstream>
 
-namespace voxel_grid
-{
-    VoxelFilterDown::VoxelFilterDown(ros::NodeHandle &nh) : nh_(nh)
-    {
-        // This loop is used to check if the parameters are loaded from the launch file or not. If not, the node will be shut down.
-        if (!readParameters())
-        {
-          ROS_ERROR("Could not launch the node!.");
+
+namespace voxel_grid {
+    VoxelFilterDown::VoxelFilterDown(ros::NodeHandle &nh) : nh_(nh) {
+        if (!readParameters()) {
+          ROS_ERROR("Could not launch the node due to parameter issues.");
           ros::requestShutdown();
+          return;
         }
 
-        point_cloud_publisher = nh_.advertise<sensor_msgs::PointCloud2>(m_publisher_topic_name, 1, true);
+        point_cloud_publisher_ = nh_.advertise<sensor_msgs::PointCloud2>(m_publisher_topic_name, 1, true);
+
+        ROS_INFO("**********************************************************************");
+        ROS_INFO("Voxel Grid Filter Node is started for down sampling the point cloud.");
+        ROS_INFO("Parameters: Input PCD File: %s, Output PCD File: %s, Leaf Size: %f, Publish Topic: %s",
+                 m_input_pcd_file.c_str(), m_output_pcd_file.c_str(), m_leaf_size, m_publisher_topic_name.c_str());
+        ROS_INFO("**********************************************************************"
+        
+        );
 
         pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
-        pcl::PointCloud<pcl::PointXYZ>::Ptr filtered_cloud(new pcl::PointCloud<pcl::PointXYZ>);
+        pcl::PointCloud<pcl::PointXYZ>::Ptr sor_filtered_cloud(new pcl::PointCloud<pcl::PointXYZ>);
+        pcl::PointCloud<pcl::PointXYZ>::Ptr voxel_filtered_cloud(new pcl::PointCloud<pcl::PointXYZ>);
 
-        processPointCloud(cloud, filtered_cloud); // Call the processPointCloud() function
-        visualizePointCloud(cloud, filtered_cloud); // Call the visualizePointCloud() function
-        //Giving information about the node
-        std::cout << "  =============================================================== " << std::endl;
-        std::cout << "  VOXEL FILTER NODE IS STARTED FOR DOWN SAMPLING THE POINT CLOUD" << std::endl;
-        std::cout << "  =============================================================== " << std::endl;
-        
-        std::cout << " " <<std::endl;
-        std::cout << "  PARAMETERS:" << std::endl;
-
-        std::cout << "  ************************************************************************" << std::endl;
-        std::cout << "  INPUT PCD FILE: " << m_input_pcd_file << std::endl;
-        std::cout << "  OUTPUT PCD FILE: " << m_output_pcd_file << std::endl;
-        std::cout << "  LEAF SIZE: " << m_leaf_size << std::endl;
-        std::cout << "  PUBLISH TOPIC: " << m_publisher_topic_name << std::endl;
-        std::cout << "  ************************************************************************" << std::endl;
+        processPointCloud(cloud, sor_filtered_cloud, voxel_filtered_cloud);
+        visualizePointCloud(cloud, sor_filtered_cloud, voxel_filtered_cloud);
+    }
+    VoxelFilterDown::~VoxelFilterDown() {
+        ROS_INFO("Voxel Grid Filter Node has been terminated.");
     }
 
-    // Destructor
-    VoxelFilterDown::~VoxelFilterDown()
-    {
-    }
-
-    //This function reads the parameters from the launch file
-    bool VoxelFilterDown::readParameters()
-    {
+    bool VoxelFilterDown::readParameters() {
       bool success = true;
-
-      if (!nh_.getParam("input_pcd_file", m_input_pcd_file))
-      {
-          ROS_ERROR_STREAM("Failed to load input pcd file.");
-          return false;
-      }
-
-      if (!nh_.getParam("output_pcd_file", m_output_pcd_file))
-      {
-          ROS_ERROR_STREAM("Failed to load output pcd file.");
-          return false;
-      }
-
-      if (!nh_.getParam("m_leaf_size", m_leaf_size))
-      {
-          ROS_ERROR_STREAM("Failed to get leaf size.");
-          return false;
-      }
-
-      if (!nh_.getParam("publish_topic", m_publisher_topic_name))
-      {
-          ROS_ERROR_STREAM("Failed to get publish topic.");
-          return false;
-      }
-
+      success &= nh_.getParam("input_pcd_file", m_input_pcd_file);
+      success &= nh_.getParam("output_pcd_file", m_output_pcd_file);
+      success &= nh_.getParam("m_leaf_size", m_leaf_size);
+      success &= nh_.getParam("publish_topic", m_publisher_topic_name);
+      
+      //to get SOR parameters
+      success &= nh_.getParam("use_sor_filter", use_sor_filter_);
+      success &= nh_.getParam("sor_mean_k", sor_mean_k_);
+      success &= nh_.getParam("sor_std_dev_mul_thresh", sor_std_dev_mul_thresh_);
+      
       return success;
     }
 
-    // This function loads the input PCD file,
-    // applies the voxel grid filter, and saves the filtered PCD file as binary
-    void VoxelFilterDown::processPointCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr& cloud, pcl::PointCloud<pcl::PointXYZ>::Ptr& filtered_cloud)
-    {
-        // Load the input PCD file
-        // pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);  // remove this line
+    void VoxelFilterDown::processPointCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr& cloud, 
+                                            pcl::PointCloud<pcl::PointXYZ>::Ptr& sor_filtered_cloud, 
+                                            pcl::PointCloud<pcl::PointXYZ>::Ptr& voxel_filtered_cloud) {
+        auto start = std::chrono::high_resolution_clock::now();
 
-        // check if the input file is empty
-        if (pcl::io::loadPCDFile(m_input_pcd_file, *cloud) < 0)
-        {
-            PCL_ERROR("Failed to load file %s\n", m_input_pcd_file.c_str());
+        // Load the point cloud from file
+        if (pcl::io::loadPCDFile<pcl::PointXYZ>(m_input_pcd_file, *cloud) < 0) {
+            ROS_ERROR("Failed to load file %s", m_input_pcd_file.c_str());
             return;
         }
 
-        // Apply the voxel grid filter
-        // pcl::PointCloud<pcl::PointXYZ>::Ptr filtered_cloud(new pcl::PointCloud<pcl::PointXYZ>);  // remove this line
+        // Apply SOR filter
+        pcl::StatisticalOutlierRemoval<pcl::PointXYZ> sor;
+        sor.setInputCloud(cloud);
+        sor.setMeanK(sor_mean_k_);
+        sor.setStddevMulThresh(sor_std_dev_mul_thresh_);
+        sor.filter(*sor_filtered_cloud);
+
+        // Apply Voxel Grid filter
         pcl::VoxelGrid<pcl::PointXYZ> vg;
-
-        // Set the leaf size
-        vg.setInputCloud(cloud);
+        vg.setInputCloud(sor_filtered_cloud);
         vg.setLeafSize(m_leaf_size, m_leaf_size, m_leaf_size);
+        vg.filter(*voxel_filtered_cloud);
 
-        vg.filter(*filtered_cloud);
+        pcl::io::savePCDFileBinary(m_output_pcd_file, *voxel_filtered_cloud); // Save the final voxel filtered cloud
 
-        // Save the filtered PCD file as binary
-        pcl::io::savePCDFileBinary(m_output_pcd_file, *filtered_cloud);
+        auto stop = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
+        ROS_INFO("Complete processing took %ld milliseconds.", duration.count());
+
+        // Visualize the point clouds
+        visualizePointCloud(cloud, sor_filtered_cloud, voxel_filtered_cloud);
     }
 
 
-    void VoxelFilterDown::visualizePointCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr& cloud, pcl::PointCloud<pcl::PointXYZ>::Ptr& filtered_cloud)
+
+    void VoxelFilterDown::applySORFilter(pcl::PointCloud<pcl::PointXYZ>::Ptr& cloud) 
     {
-        //visualize input point cloud
-        pcl::visualization::PCLVisualizer::Ptr input_viewer(new pcl::visualization::PCLVisualizer("Input Cloud Viewer"));
+        if (!use_sor_filter_) return; // Skip if SOR filter is not enabled
 
-        input_viewer->addPointCloud<pcl::PointXYZ>(cloud, "input cloud");
-        input_viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "input cloud");
-        input_viewer->addCoordinateSystem(m_coordinate_system_size); //10.0
-        input_viewer->setBackgroundColor(m_background_color_b, m_background_color_g, m_background_color_r);//0.0, 0.0, 0.0
-        input_viewer->initCameraParameters();
-        
-        // Visualize the filtered point cloud
-        pcl::visualization::PCLVisualizer::Ptr filtered_viewer(new pcl::visualization::PCLVisualizer("Filtered Cloud Viewer"));
+        pcl::StatisticalOutlierRemoval<pcl::PointXYZ> sor;
+        sor.setInputCloud(cloud);
+        sor.setMeanK(sor_mean_k_);
+        sor.setStddevMulThresh(sor_std_dev_mul_thresh_);
+        sor.filter(*cloud);
+    }
 
-        filtered_viewer->addPointCloud<pcl::PointXYZ>(filtered_cloud, "filtered cloud");
-        filtered_viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "filtered cloud");
-        filtered_viewer->addCoordinateSystem(m_coordinate_system_size);//10.0
-        filtered_viewer->setBackgroundColor(m_background_color_b, m_background_color_g, m_background_color_r);//0.0, 0.0, 0.0
-        filtered_viewer->initCameraParameters();
 
-        // Convert the pcl::PointCloud type to sensor_msgs::PointCloud2 type
-        sensor_msgs::PointCloud2 output;
-        pcl::toROSMsg(*filtered_cloud, output);
-        output.header.frame_id = "filtered_cloud";
+    void VoxelFilterDown::visualizePointCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr& cloud, 
+                                               pcl::PointCloud<pcl::PointXYZ>::Ptr& sor_filtered_cloud,
+                                               pcl::PointCloud<pcl::PointXYZ>::Ptr& voxel_filtered_cloud) 
+    {
+        // Viewer for the original input cloud
+        pcl::visualization::PCLVisualizer viewer_original("Original Input Cloud");
+        pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> input_color_handler(cloud, 255, 255, 255); // White
+        viewer_original.addPointCloud(cloud, input_color_handler, "original cloud");
+        viewer_original.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "original cloud");
+        viewer_original.addCoordinateSystem(1.0);
+        viewer_original.setBackgroundColor(0, 0, 0); // Black background for contrast
+        viewer_original.initCameraParameters();
 
-        while (!filtered_viewer->wasStopped() && !input_viewer->wasStopped())
-        {
-            // Update the viewers
-            input_viewer->spinOnce(100);
-            filtered_viewer->spinOnce(100);
-            std::this_thread::sleep_for(std::chrono::microseconds(100000));
+        // Viewer for the cloud after SOR
+        pcl::visualization::PCLVisualizer viewer_sor("Cloud After SOR Filter");
+        pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> sor_color_handler(sor_filtered_cloud, 255, 255, 255); // White
+        viewer_sor.addPointCloud(sor_filtered_cloud, sor_color_handler, "sor filtered cloud");
+        viewer_sor.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "sor filtered cloud");
+        viewer_sor.addCoordinateSystem(1.0);
+        viewer_sor.setBackgroundColor(0, 0, 0);
+        viewer_sor.initCameraParameters();
 
-            // Publish the filtered point cloud
-            ros::Time time = ros::Time::now();
-            point_cloud_publisher.publish(output);
-            ros::spinOnce();
+        // Viewer for the cloud after Voxel Grid
+        pcl::visualization::PCLVisualizer viewer_voxel("Cloud After Voxel Grid Filter");
+        pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> voxel_color_handler(voxel_filtered_cloud, 255, 255, 255); // White
+        viewer_voxel.addPointCloud(voxel_filtered_cloud, voxel_color_handler, "voxel filtered cloud");
+        viewer_voxel.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "voxel filtered cloud");
+        viewer_voxel.addCoordinateSystem(1.0);
+        viewer_voxel.setBackgroundColor(0, 0, 0);
+        viewer_voxel.initCameraParameters();
+
+        // Main visualization loops
+        while (!viewer_original.wasStopped() || !viewer_sor.wasStopped() || !viewer_voxel.wasStopped()) {
+            viewer_original.spinOnce(100);
+            viewer_sor.spinOnce(100);
+            viewer_voxel.spinOnce(100);
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
         }
     }
 
-} // namespace voxel_grid
+}

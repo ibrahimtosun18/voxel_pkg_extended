@@ -3,15 +3,22 @@
   <node pkg="voxel_pkg" type="voxel_filter_node" name="voxel_filter_node" output="screen">
 
     <!-- Parameters -->
-    <param name="input_pcd_file" value="$(find voxel_pkg)/data/251371071.pcd" />
+    <param name="input_pcd_file" value="$(find voxel_pkg)/data/30_ekim_tum_parkur.pcd" />
     <param name="output_pcd_file" value="$(find voxel_pkg)/data/filtered_new_pcd.pcd" />
     <param name="m_leaf_size" value="0.5" />
     <param name="publish_topic" value="voxel_downsampled_point_cloud" />
     <param name="point_size" value="1" />
     <param name="coordinate_system_size" value="10.0" />
-    <param name="background_color_r" value="0" />
+    <param name="background_color_r" value="200" />
     <param name="background_color_g" value="0" />
     <param name="background_color_b" value="0" />
+
+    <!-- SOR parameters -->
+    <param name="use_sor_filter" value="true" />
+    <param name="sor_mean_k" value="80" />
+    <param name="sor_std_dev_mul_thresh" value="1.0" />
+
+    
     
 
   </node>
