@@ -90,6 +90,10 @@ The voxel filter node also provides visualization of the input and filtered poin
 
 ![upsampled1](https://github.com/ibrahimtosun18/voxel_pkg/assets/95874081/11fcd2b6-9ecf-4e49-bdcf-0efe6425d03d)
 
+## Statistical Outlier Removal
+Code also contains SOR method wich is used to remove redundant points from PCD file and reduce the size of it.
+This will lead to better performance.
+
 ## Launch File Parameters
 
 1. The voxel filter node can be customized using the following parameters in the launch file (`start_voxel_grid_filter.launch`):
