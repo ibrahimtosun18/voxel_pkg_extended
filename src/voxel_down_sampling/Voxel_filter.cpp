@@ -3,6 +3,8 @@
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/filters/random_sample.h>
 #include <sstream>
+#include <filesystem>
+
 
 
 namespace voxel_grid {
@@ -17,7 +19,7 @@ namespace voxel_grid {
 
         ROS_INFO("**********************************************************************");
         ROS_INFO("Voxel Grid Filter Node is started for down sampling the point cloud.");
-        ROS_INFO("Parameters: Input PCD File: %s, Output PCD File: %s, Leaf Size: %f, Publish Topic: %s",
+        ROS_INFO("Parameters: \n Input PCD File: %s \n, Output PCD File: %s \n, Leaf Size: %f \n, Publish Topic: %s \n",
                  m_input_pcd_file.c_str(), m_output_pcd_file.c_str(), m_leaf_size, m_publisher_topic_name.c_str());
         ROS_INFO("**********************************************************************"
         
@@ -137,4 +139,36 @@ namespace voxel_grid {
         }
     }
 
+    void VoxelFilterDown::outputPerformanceMetrics(pcl::PointCloud<pcl::PointXYZ>::Ptr& sor_filtered_cloud,
+                                                   pcl::PointCloud<pcl::PointXYZ>::Ptr& voxel_filtered_cloud) {
+        // Assuming you already have calculated the size and other metrics somewhere or do it here
+        // Example: file sizes, point reduction percentage, etc.
+        std::cout << "Performance Metrics:" << std::endl;
+        std::cout << "Original Point Count: " << sor_filtered_cloud->points.size() << std::endl;
+        std::cout << "Filtered Point Count: " << voxel_filtered_cloud->points.size() << std::endl;
+        
+        // File sizes (example assumes you have saved these clouds and want to check file sizes)
+        std::filesystem::path sor_path(m_output_pcd_file); // Uses the class member that should hold the full path
+        std::filesystem::path voxel_path(m_output_pcd_file); // Same as above, adjust if they are different
+
+        auto sor_file_size = std::filesystem::file_size(sor_path);
+        auto voxel_file_size = std::filesystem::file_size(voxel_path);
+
+
+        std::cout << "SOR Filtered File Size: " << sor_file_size << " bytes" << std::endl;
+        std::cout << "Voxel Grid Filtered File Size: " << voxel_file_size << " bytes" << std::endl;
+
+        // Calculate the reduction in points
+        double reduction_percentage = 100.0 * (1.0 - static_cast<double>(voxel_filtered_cloud->points.size()) / sor_filtered_cloud->points.size());
+        std::cout << "Reduction in points: " << reduction_percentage << "%" << std::endl;
+
+        // Optionally include timing data if captured
+        std::cout << "Processing Time (ms): " << processing_time_ms_ << std::endl;
+
+        // Any other metrics...
+    }
+
 }
+
+
+
