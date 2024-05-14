@@ -9,4 +9,3 @@ int main(int argc, char **argv) {
     ros::spin();  // This will keep your node running until manually stopped.
     return 0;
 }
-
