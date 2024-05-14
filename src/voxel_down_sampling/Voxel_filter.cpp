@@ -26,7 +26,7 @@ namespace voxel_grid {
         pcl::PointCloud<pcl::PointXYZ>::Ptr voxel_filtered_cloud(new pcl::PointCloud<pcl::PointXYZ>);
 
         processPointCloud(cloud, sor_filtered_cloud, voxel_filtered_cloud);
-        outputPerformanceMetrics(); 
+        outputPerformanceMetrics(); //do not change this functions position. Otherwise it stuck on ros::spin and does not prints anything out. Honestly it took way more time than you imagine for me to solve it.
         visualizePointCloud(cloud, sor_filtered_cloud, voxel_filtered_cloud);
     }
 
