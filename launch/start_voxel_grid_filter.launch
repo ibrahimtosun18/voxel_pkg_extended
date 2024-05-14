@@ -1,10 +1,9 @@
 <launch>
   <!-- Node -->
   <node pkg="voxel_pkg" type="voxel_filter_node" name="voxel_filter_node" output="screen">
-
     <!-- Parameters -->
-    <param name="input_pcd_file" value="$(find voxel_pkg)/data/30_ekim_tum_parkur.pcd" />
-    <param name="output_pcd_file" value="$(find voxel_pkg)/data/filtered_new_pcd.pcd" />
+    <param name="input_pcd_file" value="/home/ibrahim/voxel_ws/src/voxel_pkg/data/30_ekim_tum_parkur.pcd" />
+    <param name="output_pcd_file" value="/home/ibrahim/voxel_ws/src/voxel_pkg/data/filtered_new_pcd.pcd" />
     <param name="m_leaf_size" value="0.5" />
     <param name="publish_topic" value="voxel_downsampled_point_cloud" />
     <param name="point_size" value="1" />
@@ -17,9 +16,5 @@
     <param name="use_sor_filter" value="true" />
     <param name="sor_mean_k" value="80" />
     <param name="sor_std_dev_mul_thresh" value="1.0" />
-
-    
-    
-
   </node>
 </launch>
