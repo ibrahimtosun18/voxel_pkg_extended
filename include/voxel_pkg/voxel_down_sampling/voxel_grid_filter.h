@@ -8,38 +8,30 @@
 #include <chrono>
 #include <thread>
 #include <pcl/filters/statistical_outlier_removal.h>
+#include <iostream>
+#include <fstream>
+#include <sys/stat.h> // POSIX library for file size retrieval
 
-
-namespace voxel_grid
-{
-    class VoxelFilterDown
-    {
-
+namespace voxel_grid {
+    class VoxelFilterDown {
     public:
-
-        //constructor
         VoxelFilterDown(ros::NodeHandle &nh);
-
-        //destructor
         ~VoxelFilterDown();
 
-        // This function is used to process the point cloud. 
         void processPointCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr& cloud, 
-                                                pcl::PointCloud<pcl::PointXYZ>::Ptr& sor_filtered_cloud, 
-                                                pcl::PointCloud<pcl::PointXYZ>::Ptr& voxel_filtered_cloud); 
-
-        // This function is used to visualize the point cloud.
+                               pcl::PointCloud<pcl::PointXYZ>::Ptr& sor_filtered_cloud, 
+                               pcl::PointCloud<pcl::PointXYZ>::Ptr& voxel_filtered_cloud);
         void visualizePointCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr& cloud, 
-                                               pcl::PointCloud<pcl::PointXYZ>::Ptr& sor_filtered_cloud,
-                                               pcl::PointCloud<pcl::PointXYZ>::Ptr& voxel_filtered_cloud); 
+                                 pcl::PointCloud<pcl::PointXYZ>::Ptr& sor_filtered_cloud,
+                                 pcl::PointCloud<pcl::PointXYZ>::Ptr& voxel_filtered_cloud);
+        void outputPerformanceMetrics();
+        void savePointCloud(const pcl::PointCloud<pcl::PointXYZ>::Ptr& cloud, const std::string& filename, bool binary);
 
     private:
-
-        //Read parameters function
         bool readParameters();
-        
-        ros::Publisher point_cloud_publisher_;
+        void applySORFilter(pcl::PointCloud<pcl::PointXYZ>::Ptr& cloud);
 
+        ros::Publisher point_cloud_publisher_;
         ros::NodeHandle nh_;
 
         std::string m_input_pcd_file;
@@ -54,20 +46,8 @@ namespace voxel_grid
         double m_point_size;
         double processing_time_ms_;
 
-        // SOR Filter parameters
         bool use_sor_filter_;
         int sor_mean_k_;
         double sor_std_dev_mul_thresh_;
-        
-        void applySORFilter(pcl::PointCloud<pcl::PointXYZ>::Ptr& cloud);
-
-
-
-        // bool use_sor_filter_; // Whether to use the Statistical Outlier Removal filter
-        // int sor_mean_k_; // Number of nearest neighbors to use for mean distance estimation
-        // double sor_std_dev_mul_thresh_; // Standard deviation multiplier for determining which points to remove
-        
-
     };
-
 }
