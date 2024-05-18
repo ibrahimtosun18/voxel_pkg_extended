@@ -83,9 +83,7 @@ The voxel filter node also provides visualization of the input and filtered poin
 ![upsampled1](https://github.com/ibrahimtosun18/voxel_pkg/assets/95874081/11fcd2b6-9ecf-4e49-bdcf-0efe6425d03d)
 
 ## Statistical Outlier Removal
-The code also contains SOR method which is used to remove redundant points from PCD file and reduce the size of it. This will lead to better performance. 
-Original PCD file first filtered with SOR to remove any redundant points in PCD to reduce the size of it. 
-Then, output of SOR method PCD enters the voxel filter to get optimum PCD file.
+The code also includes the Statistical Outlier Removal (SOR) method, which is utilized to eliminate redundant points from the PCD file, thereby reducing its overall size. This process enhances performance by ensuring that only significant points are retained. Initially, the original PCD file is filtered using the SOR method to remove any outliers and redundant points, effectively decreasing its size. Subsequently, the output from the SOR filtering is processed through the voxel grid filter to achieve an optimized PCD file.
 
 ## How SOR method looks on visualizer
 Here you can clearly see the removal of outlier points from original PCD file
