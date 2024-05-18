@@ -74,18 +74,18 @@ This will display the filtered point cloud data on the console.
 
 The voxel filter node also provides visualization of the input and filtered point clouds using the PCLVisualizer. The visualizer windows will appear when the node is running.
 
-1. How it should look like (VOXEL)
+1. Voxel Grid Filter Visualization
 
 ![down_sample1](https://github.com/ibrahimtosun18/voxel_pkg/assets/95874081/e8f6a8e4-a5ce-4458-a295-b1b4c672b9a7)
 
-3. How it should look like (MLS)
+3. MLS Technique Visualization
 
 ![upsampled1](https://github.com/ibrahimtosun18/voxel_pkg/assets/95874081/11fcd2b6-9ecf-4e49-bdcf-0efe6425d03d)
 
 ## Statistical Outlier Removal
 The code also includes the Statistical Outlier Removal (SOR) method, which is utilized to eliminate redundant points from the PCD file, thereby reducing its overall size. This process enhances performance by ensuring that only significant points are retained. Initially, the original PCD file is filtered using the SOR method to remove any outliers and redundant points, effectively decreasing its size. Subsequently, the output from the SOR filtering is processed through the voxel grid filter to achieve an optimized PCD file.
 
-## How SOR method looks on visualizer
+## How SOR Method Looks on Visualizer
 Here you can clearly see the removal of outlier points from original PCD file
 ![terminalSOR](https://github.com/ibrahimtosun18/voxel_pkg_extended/assets/95874081/0c7f7919-0793-4f9f-8cf7-511f2c7604d0)
 
