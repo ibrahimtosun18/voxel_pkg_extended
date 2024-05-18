@@ -2,7 +2,7 @@
 
 The Voxel Grid Filter is a ROS package that performs downsampling of point clouds using the Voxel Grid algorithm. This filter can be used to reduce the number of points in a point cloud (downsampling) based on a specified voxel size. 
 
-Moving Least Squares technique on the other hand is used for up sampling pcd files. This technique can be used to increase point numbers on output pcd file (upsampling) based on a specified parameters. 
+The Moving Least Squares (MLS) technique, on the other hand, is used for upsampling PCD files. This technique can be used to increase point numbers on output pcd file (upsampling) based on a specified parameters. 
 
 Please note that; Using MLS as upsampling requires a lot of processing power, so in order to avoid lagging or freezing on your system, set parameter values compatible according to your project and system capacity. Getting output may take some time.
 
