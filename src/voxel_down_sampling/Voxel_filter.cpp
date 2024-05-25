@@ -85,7 +85,7 @@ namespace voxel_grid {
         vg.setLeafSize(m_leaf_size, m_leaf_size, m_leaf_size);
         vg.filter(*voxel_filtered_cloud);
 
-        // Save the final voxel filtered cloud in binary and ASCII formats
+        // Save the final voxel filtered cloud in binary and ASCII formats. Used for performance metrics comparison.
         savePointCloud(voxel_filtered_cloud, "/home/ibrahim/voxel_ws/src/voxel_pkg/data/filtered_binary.pcd", true);
         savePointCloud(voxel_filtered_cloud, "/home/ibrahim/voxel_ws/src/voxel_pkg/data/filtered_ascii.pcd", false);
 
